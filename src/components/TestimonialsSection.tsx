@@ -24,6 +24,26 @@ const testimonials = [
     role: "Online Coaching Client",
     quote: "Even through online coaching, Vivek's guidance was personalized and effective. He truly cares about each client's progress.",
   },
+  {
+    name: "Rohan Mehta",
+    role: "Personal Training Client",
+    quote: "I never thought I could achieve this physique. Vivek's structured approach and constant motivation made the impossible possible.",
+  },
+  {
+    name: "Anjali Bhosale",
+    role: "Corporate Wellness Partner",
+    quote: "Vivek conducted wellness sessions for our team of 200+ employees. The feedback was overwhelmingly positive — everyone loved his energy!",
+  },
+  {
+    name: "Vikram Joshi",
+    role: "Fitness Client",
+    quote: "From diet planning to workout routines, Vivek covered everything. His knowledge in nutrition and training is top-notch.",
+  },
+  {
+    name: "Neha Rao",
+    role: "Social Media Collaborator",
+    quote: "Vivek's content creation skills are amazing. Our collaboration brought great engagement and authentic fitness content to our audience.",
+  },
 ];
 
 const TestimonialsSection = () => {
