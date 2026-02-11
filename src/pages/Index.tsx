@@ -16,6 +16,9 @@ import ContactSection from "@/components/ContactSection";
 import WelcomeModal from "@/components/WelcomeModal";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import ScrollProgress from "@/components/ScrollProgress";
+import AchievementsSection from "@/components/AchievementsSection";
+import VideosSection from "@/components/VideosSection";
+import SectionWrapper from "@/components/SectionWrapper";
 
 const Index = () => {
   return (
@@ -24,19 +27,21 @@ const Index = () => {
       <WelcomeModal />
       <Navbar />
       <HeroSection />
-      <AboutSection />
-      <StatsSection />
-      <ServicesSection />
-      <DietPlansSection />
-      <TransformationsSection />
-      <GallerySection />
-      <CalculatorSection />
-      <BlogSection />
-      <BookingSection />
-      <FAQSection />
-      <InstagramSection />
-      <TestimonialsSection />
-      <ContactSection />
+      <SectionWrapper><AboutSection /></SectionWrapper>
+      <SectionWrapper><StatsSection /></SectionWrapper>
+      <SectionWrapper><AchievementsSection /></SectionWrapper>
+      <SectionWrapper><ServicesSection /></SectionWrapper>
+      <SectionWrapper><VideosSection /></SectionWrapper>
+      <SectionWrapper><DietPlansSection /></SectionWrapper>
+      <SectionWrapper><TransformationsSection /></SectionWrapper>
+      <SectionWrapper><GallerySection /></SectionWrapper>
+      <SectionWrapper><CalculatorSection /></SectionWrapper>
+      <SectionWrapper><BlogSection /></SectionWrapper>
+      <SectionWrapper><BookingSection /></SectionWrapper>
+      <SectionWrapper><FAQSection /></SectionWrapper>
+      <SectionWrapper><InstagramSection /></SectionWrapper>
+      <SectionWrapper><TestimonialsSection /></SectionWrapper>
+      <SectionWrapper><ContactSection /></SectionWrapper>
       <WhatsAppButton />
     </div>
   );
