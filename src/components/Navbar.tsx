@@ -59,7 +59,7 @@ const Navbar = () => {
             </a>
           ))}
           <div className="flex items-center gap-2 ml-2">
-            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
+            <a href="https://www.instagram.com/tarale_vivek?igsh=dHJvN2puNHI3Ymgx&utm_source=qr" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
               <Instagram className="w-4 h-4" />
             </a>
             <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
@@ -89,7 +89,7 @@ const Navbar = () => {
                 </a>
               ))}
               <div className="flex gap-4 mt-4 pt-4 border-t border-border">
-                <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary">
+                <a href="https://www.instagram.com/tarale_vivek?igsh=dHJvN2puNHI3Ymgx&utm_source=qr" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary">
                   <Instagram className="w-5 h-5" />
                 </a>
                 <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary">
