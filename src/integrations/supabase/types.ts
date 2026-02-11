@@ -53,6 +53,42 @@ export type Database = {
         }
         Relationships: []
       }
+      diet_plans: {
+        Row: {
+          category: string
+          created_at: string
+          description: string
+          duration: string
+          features: string[]
+          id: string
+          name: string
+          popular: boolean
+          price: number
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          description?: string
+          duration?: string
+          features?: string[]
+          id?: string
+          name: string
+          popular?: boolean
+          price?: number
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string
+          duration?: string
+          features?: string[]
+          id?: string
+          name?: string
+          popular?: boolean
+          price?: number
+        }
+        Relationships: []
+      }
       gallery_photos: {
         Row: {
           alt: string

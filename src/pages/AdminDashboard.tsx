@@ -3,12 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LogOut, Image, Instagram, Settings, FileText, ArrowRightLeft } from "lucide-react";
+import { LogOut, Image, Instagram, Settings, FileText, ArrowRightLeft, UtensilsCrossed } from "lucide-react";
 import GalleryManager from "@/components/admin/GalleryManager";
 import InstagramManager from "@/components/admin/InstagramManager";
 import SettingsManager from "@/components/admin/SettingsManager";
 import BlogManager from "@/components/admin/BlogManager";
 import TransformationsManager from "@/components/admin/TransformationsManager";
+import DietPlansManager from "@/components/admin/DietPlansManager";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -66,6 +67,9 @@ const AdminDashboard = () => {
             <TabsTrigger value="transformations" className="font-body data-[state=active]:bg-primary data-[state=active]:text-primary-foreground gap-2">
               <ArrowRightLeft className="w-4 h-4" /> Transformations
             </TabsTrigger>
+            <TabsTrigger value="diet" className="font-body data-[state=active]:bg-primary data-[state=active]:text-primary-foreground gap-2">
+              <UtensilsCrossed className="w-4 h-4" /> Diet Plans
+            </TabsTrigger>
             <TabsTrigger value="instagram" className="font-body data-[state=active]:bg-primary data-[state=active]:text-primary-foreground gap-2">
               <Instagram className="w-4 h-4" /> Instagram
             </TabsTrigger>
@@ -76,6 +80,7 @@ const AdminDashboard = () => {
           <TabsContent value="gallery"><GalleryManager /></TabsContent>
           <TabsContent value="blog"><BlogManager /></TabsContent>
           <TabsContent value="transformations"><TransformationsManager /></TabsContent>
+          <TabsContent value="diet"><DietPlansManager /></TabsContent>
           <TabsContent value="instagram"><InstagramManager /></TabsContent>
           <TabsContent value="settings"><SettingsManager /></TabsContent>
         </Tabs>
