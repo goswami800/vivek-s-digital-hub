@@ -86,6 +86,42 @@ export type Database = {
         }
         Relationships: []
       }
+      client_reviews: {
+        Row: {
+          avatar_url: string | null
+          client_name: string
+          created_at: string
+          designation: string | null
+          featured: boolean
+          id: string
+          rating: number
+          review: string
+          sort_order: number
+        }
+        Insert: {
+          avatar_url?: string | null
+          client_name: string
+          created_at?: string
+          designation?: string | null
+          featured?: boolean
+          id?: string
+          rating?: number
+          review: string
+          sort_order?: number
+        }
+        Update: {
+          avatar_url?: string | null
+          client_name?: string
+          created_at?: string
+          designation?: string | null
+          featured?: boolean
+          id?: string
+          rating?: number
+          review?: string
+          sort_order?: number
+        }
+        Relationships: []
+      }
       diet_plans: {
         Row: {
           category: string

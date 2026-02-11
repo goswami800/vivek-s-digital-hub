@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LogOut, Image, Instagram, Settings, FileText, ArrowRightLeft, UtensilsCrossed, HelpCircle, Trophy, Video } from "lucide-react";
+import { LogOut, Image, Instagram, Settings, FileText, ArrowRightLeft, UtensilsCrossed, HelpCircle, Trophy, Video, Star } from "lucide-react";
 import GalleryManager from "@/components/admin/GalleryManager";
 import InstagramManager from "@/components/admin/InstagramManager";
 import SettingsManager from "@/components/admin/SettingsManager";
@@ -13,6 +13,7 @@ import DietPlansManager from "@/components/admin/DietPlansManager";
 import FAQManager from "@/components/admin/FAQManager";
 import AchievementsManager from "@/components/admin/AchievementsManager";
 import VideosManager from "@/components/admin/VideosManager";
+import ReviewsManager from "@/components/admin/ReviewsManager";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -85,6 +86,9 @@ const AdminDashboard = () => {
             <TabsTrigger value="videos" className="font-body data-[state=active]:bg-primary data-[state=active]:text-primary-foreground gap-2">
               <Video className="w-4 h-4" /> Videos
             </TabsTrigger>
+            <TabsTrigger value="reviews" className="font-body data-[state=active]:bg-primary data-[state=active]:text-primary-foreground gap-2">
+              <Star className="w-4 h-4" /> Reviews
+            </TabsTrigger>
             <TabsTrigger value="settings" className="font-body data-[state=active]:bg-primary data-[state=active]:text-primary-foreground gap-2">
               <Settings className="w-4 h-4" /> Settings
             </TabsTrigger>
@@ -97,6 +101,7 @@ const AdminDashboard = () => {
           <TabsContent value="faq"><FAQManager /></TabsContent>
           <TabsContent value="achievements"><AchievementsManager /></TabsContent>
           <TabsContent value="videos"><VideosManager /></TabsContent>
+          <TabsContent value="reviews"><ReviewsManager /></TabsContent>
           <TabsContent value="settings"><SettingsManager /></TabsContent>
         </Tabs>
       </div>
