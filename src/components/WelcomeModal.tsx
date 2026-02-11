@@ -10,20 +10,17 @@ const WelcomeModal = () => {
   const [characterSrc, setCharacterSrc] = useState(defaultCharacter);
 
   useEffect(() => {
-    const dismissed = sessionStorage.getItem("welcome_dismissed");
-    if (!dismissed) {
-      // Fetch custom greeting image
-      supabase
-        .from("site_settings")
-        .select("value")
-        .eq("key", "greeting_image")
-        .maybeSingle()
-        .then(({ data }) => {
-          if (data?.value) setCharacterSrc(data.value);
-        });
-      const timer = setTimeout(() => setOpen(true), 800);
-      return () => clearTimeout(timer);
-    }
+    // Fetch custom greeting image
+    supabase
+      .from("site_settings")
+      .select("value")
+      .eq("key", "greeting_image")
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data?.value) setCharacterSrc(data.value);
+      });
+    const timer = setTimeout(() => setOpen(true), 800);
+    return () => clearTimeout(timer);
   }, []);
 
   const handleClose = () => {
