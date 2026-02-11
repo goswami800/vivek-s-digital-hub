@@ -7,7 +7,9 @@ import ThemeToggle from "@/components/ThemeToggle";
 const navLinks = [
   { label: "Home", href: "#hero" },
   { label: "About", href: "#about" },
+  { label: "Achievements", href: "#achievements" },
   { label: "Services", href: "#services" },
+  { label: "Videos", href: "#videos" },
   { label: "Gallery", href: "#gallery" },
   { label: "Blog", href: "#blog" },
   { label: "Book Now", href: "#booking" },
