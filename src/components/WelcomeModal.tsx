@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Instagram, Youtube } from "lucide-react";
+import { X, Instagram, Youtube, Coffee } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import defaultCharacter from "@/assets/welcome-character.png";
@@ -90,6 +90,16 @@ const WelcomeModal = () => {
                 <Button className="w-full bg-red-600 hover:bg-red-700 text-white font-body gap-2">
                   <Youtube className="w-5 h-5" />
                   Subscribe on YouTube
+                </Button>
+              </a>
+              <a
+                href="https://buymeacoffee.com/vivektarale"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Button variant="outline" className="w-full font-body gap-2">
+                  <Coffee className="w-5 h-5" />
+                  Buy Me a Coffee
                 </Button>
               </a>
             </div>
