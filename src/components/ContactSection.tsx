@@ -25,11 +25,11 @@ const ContactSection = () => {
           </p>
 
           <a
-            href="mailto:vivektarale@example.com"
+            href="mailto:vivektarale22@gmail.com"
             className="inline-flex items-center gap-3 bg-gradient-fire text-primary-foreground font-body text-lg md:text-xl px-8 py-5 rounded-full shadow-fire hover:scale-105 transition-transform mb-12"
           >
             <Mail className="w-6 h-6" />
-            vivektarale@example.com
+            vivektarale22@gmail.com
           </a>
 
           <div className="flex items-center justify-center gap-6 mt-8">
