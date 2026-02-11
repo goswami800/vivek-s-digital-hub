@@ -6,10 +6,12 @@ import GallerySection from "@/components/GallerySection";
 import InstagramSection from "@/components/InstagramSection";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import ContactSection from "@/components/ContactSection";
+import WelcomeModal from "@/components/WelcomeModal";
 
 const Index = () => {
   return (
     <div className="min-h-screen bg-background">
+      <WelcomeModal />
       <Navbar />
       <HeroSection />
       <AboutSection />
