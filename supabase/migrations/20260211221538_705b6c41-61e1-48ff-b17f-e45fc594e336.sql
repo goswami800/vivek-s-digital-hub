@@ -1,0 +1,1 @@
+ALTER TABLE public.gallery_photos ADD COLUMN pinned boolean NOT NULL DEFAULT false;

@@ -20,6 +20,7 @@ export type Database = {
           category: string
           created_at: string
           id: string
+          pinned: boolean
           src: string
           uploaded_by: string | null
         }
@@ -28,6 +29,7 @@ export type Database = {
           category?: string
           created_at?: string
           id?: string
+          pinned?: boolean
           src: string
           uploaded_by?: string | null
         }
@@ -36,6 +38,7 @@ export type Database = {
           category?: string
           created_at?: string
           id?: string
+          pinned?: boolean
           src?: string
           uploaded_by?: string | null
         }
