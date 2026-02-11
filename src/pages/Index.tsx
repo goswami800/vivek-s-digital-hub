@@ -1,12 +1,17 @@
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
 import AboutSection from "@/components/AboutSection";
+import StatsSection from "@/components/StatsSection";
 import ServicesSection from "@/components/ServicesSection";
+import TransformationsSection from "@/components/TransformationsSection";
 import GallerySection from "@/components/GallerySection";
+import BlogSection from "@/components/BlogSection";
+import BookingSection from "@/components/BookingSection";
 import InstagramSection from "@/components/InstagramSection";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import ContactSection from "@/components/ContactSection";
 import WelcomeModal from "@/components/WelcomeModal";
+import WhatsAppButton from "@/components/WhatsAppButton";
 
 const Index = () => {
   return (
@@ -15,11 +20,16 @@ const Index = () => {
       <Navbar />
       <HeroSection />
       <AboutSection />
+      <StatsSection />
       <ServicesSection />
+      <TransformationsSection />
       <GallerySection />
+      <BlogSection />
+      <BookingSection />
       <InstagramSection />
       <TestimonialsSection />
       <ContactSection />
+      <WhatsAppButton />
     </div>
   );
 };

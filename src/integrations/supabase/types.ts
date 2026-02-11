@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      blog_posts: {
+        Row: {
+          category: string
+          content: string
+          created_at: string
+          excerpt: string
+          id: string
+          image: string | null
+          published: boolean
+          slug: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          content: string
+          created_at?: string
+          excerpt?: string
+          id?: string
+          image?: string | null
+          published?: boolean
+          slug: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          content?: string
+          created_at?: string
+          excerpt?: string
+          id?: string
+          image?: string | null
+          published?: boolean
+          slug?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       gallery_photos: {
         Row: {
           alt: string
@@ -86,6 +125,33 @@ export type Database = {
           key?: string
           updated_at?: string
           value?: string
+        }
+        Relationships: []
+      }
+      transformations: {
+        Row: {
+          after_image: string
+          before_image: string
+          client_name: string
+          created_at: string
+          description: string
+          id: string
+        }
+        Insert: {
+          after_image: string
+          before_image: string
+          client_name?: string
+          created_at?: string
+          description?: string
+          id?: string
+        }
+        Update: {
+          after_image?: string
+          before_image?: string
+          client_name?: string
+          created_at?: string
+          description?: string
+          id?: string
         }
         Relationships: []
       }

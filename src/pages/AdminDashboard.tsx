@@ -3,10 +3,12 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LogOut, Image, Instagram, Settings } from "lucide-react";
+import { LogOut, Image, Instagram, Settings, FileText, ArrowRightLeft } from "lucide-react";
 import GalleryManager from "@/components/admin/GalleryManager";
 import InstagramManager from "@/components/admin/InstagramManager";
 import SettingsManager from "@/components/admin/SettingsManager";
+import BlogManager from "@/components/admin/BlogManager";
+import TransformationsManager from "@/components/admin/TransformationsManager";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -54,9 +56,15 @@ const AdminDashboard = () => {
 
       <div className="container mx-auto px-4 py-8">
         <Tabs defaultValue="gallery" className="w-full">
-          <TabsList className="bg-secondary border border-border mb-6">
+          <TabsList className="bg-secondary border border-border mb-6 flex-wrap h-auto">
             <TabsTrigger value="gallery" className="font-body data-[state=active]:bg-primary data-[state=active]:text-primary-foreground gap-2">
               <Image className="w-4 h-4" /> Gallery
+            </TabsTrigger>
+            <TabsTrigger value="blog" className="font-body data-[state=active]:bg-primary data-[state=active]:text-primary-foreground gap-2">
+              <FileText className="w-4 h-4" /> Blog
+            </TabsTrigger>
+            <TabsTrigger value="transformations" className="font-body data-[state=active]:bg-primary data-[state=active]:text-primary-foreground gap-2">
+              <ArrowRightLeft className="w-4 h-4" /> Transformations
             </TabsTrigger>
             <TabsTrigger value="instagram" className="font-body data-[state=active]:bg-primary data-[state=active]:text-primary-foreground gap-2">
               <Instagram className="w-4 h-4" /> Instagram
@@ -65,15 +73,11 @@ const AdminDashboard = () => {
               <Settings className="w-4 h-4" /> Settings
             </TabsTrigger>
           </TabsList>
-          <TabsContent value="gallery">
-            <GalleryManager />
-          </TabsContent>
-          <TabsContent value="instagram">
-            <InstagramManager />
-          </TabsContent>
-          <TabsContent value="settings">
-            <SettingsManager />
-          </TabsContent>
+          <TabsContent value="gallery"><GalleryManager /></TabsContent>
+          <TabsContent value="blog"><BlogManager /></TabsContent>
+          <TabsContent value="transformations"><TransformationsManager /></TabsContent>
+          <TabsContent value="instagram"><InstagramManager /></TabsContent>
+          <TabsContent value="settings"><SettingsManager /></TabsContent>
         </Tabs>
       </div>
     </div>
