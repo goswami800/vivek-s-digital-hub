@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, Save } from "lucide-react";
 import { toast } from "sonner";
 
 interface Video {
@@ -18,6 +18,8 @@ interface Video {
 const VideosManager = () => {
   const [items, setItems] = useState<Video[]>([]);
   const [form, setForm] = useState({ title: "", url: "", platform: "youtube", thumbnail: "", sort_order: 0 });
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editForm, setEditForm] = useState<Partial<Video>>({});
 
   const fetchData = async () => {
     const { data } = await supabase.from("videos").select("*").order("sort_order");
@@ -39,6 +41,23 @@ const VideosManager = () => {
   const handleDelete = async (id: string) => {
     await supabase.from("videos").delete().eq("id", id);
     toast.success("Deleted");
+    fetchData();
+  };
+
+  const startEdit = (item: Video) => {
+    setEditingId(item.id);
+    setEditForm({ ...item });
+  };
+
+  const handleUpdate = async () => {
+    if (!editingId || !editForm.title || !editForm.url) return toast.error("Title and URL are required");
+    const { error } = await supabase.from("videos").update({
+      title: editForm.title, url: editForm.url, platform: editForm.platform,
+      thumbnail: editForm.thumbnail || null, sort_order: editForm.sort_order,
+    }).eq("id", editingId);
+    if (error) return toast.error(error.message);
+    toast.success("Updated");
+    setEditingId(null);
     fetchData();
   };
 
@@ -66,14 +85,39 @@ const VideosManager = () => {
 
       <div className="space-y-3">
         {items.map((item) => (
-          <div key={item.id} className="flex items-center justify-between bg-card border border-border rounded-lg p-4">
-            <div>
-              <h4 className="font-display text-foreground">{item.title}</h4>
-              <p className="text-sm text-muted-foreground font-body">{item.platform} · {item.url.substring(0, 50)}...</p>
-            </div>
-            <Button variant="ghost" size="sm" onClick={() => handleDelete(item.id)}>
-              <Trash2 className="w-4 h-4 text-destructive" />
-            </Button>
+          <div key={item.id} className="bg-card border border-border rounded-lg p-4 space-y-3">
+            {editingId === item.id ? (
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <Input value={editForm.title || ""} onChange={(e) => setEditForm({ ...editForm, title: e.target.value })} placeholder="Title" />
+                  <Input value={editForm.url || ""} onChange={(e) => setEditForm({ ...editForm, url: e.target.value })} placeholder="URL" />
+                  <Select value={editForm.platform || "youtube"} onValueChange={(v) => setEditForm({ ...editForm, platform: v })}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="youtube">YouTube</SelectItem>
+                      <SelectItem value="instagram">Instagram</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Input type="number" value={editForm.sort_order || 0} onChange={(e) => setEditForm({ ...editForm, sort_order: Number(e.target.value) })} placeholder="Sort Order" />
+                  <Input value={editForm.thumbnail || ""} onChange={(e) => setEditForm({ ...editForm, thumbnail: e.target.value })} placeholder="Thumbnail URL" className="md:col-span-2" />
+                </div>
+                <div className="flex gap-2">
+                  <Button size="sm" onClick={handleUpdate} className="bg-gradient-fire text-primary-foreground gap-1"><Save className="w-4 h-4" /> Save</Button>
+                  <Button size="sm" variant="ghost" onClick={() => setEditingId(null)}>Cancel</Button>
+                </div>
+              </>
+            ) : (
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="font-display text-foreground">{item.title}</h4>
+                  <p className="text-sm text-muted-foreground font-body">{item.platform} · {item.url.substring(0, 50)}...</p>
+                </div>
+                <div className="flex gap-1">
+                  <Button variant="ghost" size="sm" onClick={() => startEdit(item)}><Save className="w-4 h-4 text-primary" /></Button>
+                  <Button variant="ghost" size="sm" onClick={() => handleDelete(item.id)}><Trash2 className="w-4 h-4 text-destructive" /></Button>
+                </div>
+              </div>
+            )}
           </div>
         ))}
       </div>
