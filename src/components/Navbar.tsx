@@ -62,7 +62,7 @@ const Navbar = () => {
             <a href="https://www.instagram.com/tarale_vivek?igsh=dHJvN2puNHI3Ymgx&utm_source=qr" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
               <Instagram className="w-4 h-4" />
             </a>
-            <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
+            <a href="https://www.youtube.com/@VivekTarale0" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
               <Youtube className="w-4 h-4" />
             </a>
           </div>
@@ -92,7 +92,7 @@ const Navbar = () => {
                 <a href="https://www.instagram.com/tarale_vivek?igsh=dHJvN2puNHI3Ymgx&utm_source=qr" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary">
                   <Instagram className="w-5 h-5" />
                 </a>
-                <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary">
+                <a href="https://www.youtube.com/@VivekTarale0" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary">
                   <Youtube className="w-5 h-5" />
                 </a>
               </div>
