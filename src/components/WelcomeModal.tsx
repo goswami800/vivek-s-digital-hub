@@ -2,14 +2,25 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Instagram, Youtube } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import welcomeCharacter from "@/assets/welcome-character.png";
+import { supabase } from "@/integrations/supabase/client";
+import defaultCharacter from "@/assets/welcome-character.png";
 
 const WelcomeModal = () => {
   const [open, setOpen] = useState(false);
+  const [characterSrc, setCharacterSrc] = useState(defaultCharacter);
 
   useEffect(() => {
     const dismissed = sessionStorage.getItem("welcome_dismissed");
     if (!dismissed) {
+      // Fetch custom greeting image
+      supabase
+        .from("site_settings")
+        .select("value")
+        .eq("key", "greeting_image")
+        .maybeSingle()
+        .then(({ data }) => {
+          if (data?.value) setCharacterSrc(data.value);
+        });
       const timer = setTimeout(() => setOpen(true), 800);
       return () => clearTimeout(timer);
     }
@@ -46,7 +57,7 @@ const WelcomeModal = () => {
             </button>
 
             <motion.img
-              src={welcomeCharacter}
+              src={characterSrc}
               alt="Welcome character"
               className="w-32 h-32 mx-auto mb-4 rounded-full"
               animate={{ y: [0, -8, 0] }}

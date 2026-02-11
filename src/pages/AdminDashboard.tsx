@@ -3,9 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LogOut, Image, Instagram } from "lucide-react";
+import { LogOut, Image, Instagram, Settings } from "lucide-react";
 import GalleryManager from "@/components/admin/GalleryManager";
 import InstagramManager from "@/components/admin/InstagramManager";
+import SettingsManager from "@/components/admin/SettingsManager";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -60,12 +61,18 @@ const AdminDashboard = () => {
             <TabsTrigger value="instagram" className="font-body data-[state=active]:bg-primary data-[state=active]:text-primary-foreground gap-2">
               <Instagram className="w-4 h-4" /> Instagram
             </TabsTrigger>
+            <TabsTrigger value="settings" className="font-body data-[state=active]:bg-primary data-[state=active]:text-primary-foreground gap-2">
+              <Settings className="w-4 h-4" /> Settings
+            </TabsTrigger>
           </TabsList>
           <TabsContent value="gallery">
             <GalleryManager />
           </TabsContent>
           <TabsContent value="instagram">
             <InstagramManager />
+          </TabsContent>
+          <TabsContent value="settings">
+            <SettingsManager />
           </TabsContent>
         </Tabs>
       </div>
