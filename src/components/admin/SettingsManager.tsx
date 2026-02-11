@@ -4,13 +4,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Upload, Smile } from "lucide-react";
+import { Upload, Smile, Lock } from "lucide-react";
 
 const SettingsManager = () => {
   const [currentImage, setCurrentImage] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [changingPassword, setChangingPassword] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -103,6 +106,67 @@ const SettingsManager = () => {
             </Button>
           </form>
         </div>
+      </div>
+
+      {/* Change Password */}
+      <div className="bg-card rounded-xl border border-border p-6">
+        <h2 className="text-xl font-display text-foreground mb-4">Change Password</h2>
+        <p className="text-sm text-muted-foreground font-body mb-6">
+          Update your admin account password.
+        </p>
+        <form
+          onSubmit={async (e) => {
+            e.preventDefault();
+            if (newPassword.length < 6) {
+              toast({ title: "Password too short", description: "Must be at least 6 characters.", variant: "destructive" });
+              return;
+            }
+            if (newPassword !== confirmPassword) {
+              toast({ title: "Passwords don't match", variant: "destructive" });
+              return;
+            }
+            setChangingPassword(true);
+            const { error } = await supabase.auth.updateUser({ password: newPassword });
+            if (error) {
+              toast({ title: "Failed to update password", description: error.message, variant: "destructive" });
+            } else {
+              toast({ title: "Password updated successfully!" });
+              setNewPassword("");
+              setConfirmPassword("");
+            }
+            setChangingPassword(false);
+          }}
+          className="max-w-md space-y-4"
+        >
+          <div className="space-y-2">
+            <Label className="font-body">New Password</Label>
+            <Input
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              placeholder="Enter new password"
+              className="bg-secondary border-border"
+              minLength={6}
+              required
+            />
+          </div>
+          <div className="space-y-2">
+            <Label className="font-body">Confirm Password</Label>
+            <Input
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              placeholder="Confirm new password"
+              className="bg-secondary border-border"
+              minLength={6}
+              required
+            />
+          </div>
+          <Button type="submit" disabled={changingPassword} className="bg-gradient-fire hover:opacity-90 font-body">
+            <Lock className="w-4 h-4 mr-1" />
+            {changingPassword ? "Updating..." : "Update Password"}
+          </Button>
+        </form>
       </div>
     </div>
   );
