@@ -17,6 +17,7 @@ const GallerySection = () => {
   const [filter, setFilter] = useState<Category>("all");
   const [lightbox, setLightbox] = useState<Photo | null>(null);
   const [photos, setPhotos] = useState<Photo[]>([]);
+  const [showAll, setShowAll] = useState(false);
 
   useEffect(() => {
     const fetchPhotos = async () => {
@@ -30,6 +31,7 @@ const GallerySection = () => {
   }, []);
 
   const filtered = filter === "all" ? photos : photos.filter((p) => p.category === filter);
+  const displayedPhotos = showAll ? filtered : filtered.slice(0, 6);
 
   return (
     <section id="gallery" className="py-20 md:py-32">
@@ -61,27 +63,40 @@ const GallerySection = () => {
         {photos.length === 0 ? (
           <p className="text-center text-muted-foreground font-body">No photos yet. Admin can upload from the dashboard.</p>
         ) : (
-          <motion.div layout className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            <AnimatePresence mode="popLayout">
-              {filtered.map((photo) => (
-                <motion.div
-                  key={photo.id}
-                  layout
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  transition={{ duration: 0.3 }}
-                  className="aspect-square rounded-xl overflow-hidden cursor-pointer group relative bg-secondary"
-                  onClick={() => setLightbox(photo)}
+          <>
+            <motion.div layout className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              <AnimatePresence mode="popLayout">
+                {displayedPhotos.map((photo) => (
+                  <motion.div
+                    key={photo.id}
+                    layout
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ duration: 0.3 }}
+                    className="aspect-square rounded-xl overflow-hidden cursor-pointer group relative bg-secondary"
+                    onClick={() => setLightbox(photo)}
+                  >
+                    <img src={photo.src} alt={photo.alt} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+                      <p className="text-sm font-body text-foreground">{photo.alt}</p>
+                    </div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </motion.div>
+
+            {!showAll && filtered.length > 6 && (
+              <div className="text-center mt-8">
+                <button
+                  onClick={() => setShowAll(true)}
+                  className="px-8 py-3 rounded-full border border-primary text-primary font-body hover:bg-primary hover:text-primary-foreground transition-colors duration-300"
                 >
-                  <img src={photo.src} alt={photo.alt} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
-                    <p className="text-sm font-body text-foreground">{photo.alt}</p>
-                  </div>
-                </motion.div>
-              ))}
-            </AnimatePresence>
-          </motion.div>
+                  View More ({filtered.length - 6} more)
+                </button>
+              </div>
+            )}
+          </>
         )}
       </div>
 
