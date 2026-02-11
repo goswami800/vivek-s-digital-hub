@@ -45,7 +45,7 @@ const ContactSection = () => {
           </div>
           <div className="flex items-center justify-center gap-6 mt-8">
             <a
-              href="https://instagram.com"
+              href="https://www.instagram.com/tarale_vivek?igsh=dHJvN2puNHI3Ymgx&utm_source=qr"
               target="_blank"
               rel="noopener noreferrer"
               className="w-12 h-12 rounded-full bg-card border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary transition-colors"

@@ -63,7 +63,7 @@ const InstagramSection = () => {
             asChild
             className="bg-gradient-fire text-primary-foreground font-body rounded-full px-8 py-6 hover:scale-105 transition-transform shadow-fire"
           >
-            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">
+            <a href="https://www.instagram.com/tarale_vivek?igsh=dHJvN2puNHI3Ymgx&utm_source=qr" target="_blank" rel="noopener noreferrer">
               <Instagram className="w-5 h-5 mr-2" />
               Follow on Instagram
             </a>
