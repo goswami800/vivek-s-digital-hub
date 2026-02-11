@@ -28,7 +28,7 @@ const HeroSection = () => {
           <p className="text-sm md:text-base font-body tracking-[0.3em] uppercase text-muted-foreground mb-4">
             Welcome to the world of
           </p>
-          <h1 className="text-6xl md:text-8xl lg:text-9xl font-display text-gradient-fire leading-none mb-6">
+          <h1 className="text-4xl sm:text-6xl md:text-8xl lg:text-9xl font-display text-gradient-fire leading-none mb-6">
             VIVEK TARALE
           </h1>
           <p className="text-lg md:text-xl font-body text-muted-foreground max-w-2xl mx-auto mb-4">

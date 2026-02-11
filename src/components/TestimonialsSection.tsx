@@ -76,7 +76,7 @@ const TestimonialsSection = () => {
         </motion.div>
 
         <div className="max-w-3xl mx-auto relative">
-          <div className="bg-card border border-border rounded-2xl p-8 md:p-12 text-center relative overflow-hidden">
+          <div className="bg-card border border-border rounded-2xl p-5 sm:p-8 md:p-12 text-center relative overflow-hidden">
             <Quote className="w-10 h-10 text-primary/30 mx-auto mb-6" />
             <motion.div
               key={current}

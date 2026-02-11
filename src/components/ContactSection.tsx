@@ -26,7 +26,7 @@ const ContactSection = () => {
 
           <a
             href="mailto:vivektarale22@gmail.com"
-            className="inline-flex items-center gap-3 bg-gradient-fire text-primary-foreground font-body text-lg md:text-xl px-8 py-5 rounded-full shadow-fire hover:scale-105 transition-transform mb-12"
+            className="inline-flex items-center gap-2 sm:gap-3 bg-gradient-fire text-primary-foreground font-body text-sm sm:text-lg md:text-xl px-5 sm:px-8 py-4 sm:py-5 rounded-full shadow-fire hover:scale-105 transition-transform mb-12 break-all sm:break-normal"
           >
             <Mail className="w-6 h-6" />
             vivektarale22@gmail.com
