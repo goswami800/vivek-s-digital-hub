@@ -1,33 +1,33 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { supabase } from "@/integrations/supabase/client";
 
 type Category = "all" | "fitness" | "modeling" | "events";
 
 interface Photo {
-  id: number;
+  id: string;
   src: string;
-  category: Category;
+  category: string;
   alt: string;
 }
-
-// Placeholder photos — user will replace with real uploads
-const photos: Photo[] = [
-  { id: 1, src: "/placeholder.svg", category: "fitness", alt: "Gym workout" },
-  { id: 2, src: "/placeholder.svg", category: "fitness", alt: "Training session" },
-  { id: 3, src: "/placeholder.svg", category: "modeling", alt: "Fitness photoshoot" },
-  { id: 4, src: "/placeholder.svg", category: "modeling", alt: "Magazine cover shoot" },
-  { id: 5, src: "/placeholder.svg", category: "events", alt: "Fitness expo" },
-  { id: 6, src: "/placeholder.svg", category: "events", alt: "Wellness retreat" },
-  { id: 7, src: "/placeholder.svg", category: "fitness", alt: "Deadlift PR" },
-  { id: 8, src: "/placeholder.svg", category: "modeling", alt: "Brand campaign" },
-  { id: 9, src: "/placeholder.svg", category: "events", alt: "Event hosting" },
-];
 
 const GallerySection = () => {
   const [filter, setFilter] = useState<Category>("all");
   const [lightbox, setLightbox] = useState<Photo | null>(null);
+  const [photos, setPhotos] = useState<Photo[]>([]);
+
+  useEffect(() => {
+    const fetchPhotos = async () => {
+      const { data } = await supabase
+        .from("gallery_photos")
+        .select("id, src, category, alt")
+        .order("created_at", { ascending: false });
+      setPhotos(data || []);
+    };
+    fetchPhotos();
+  }, []);
 
   const filtered = filter === "all" ? photos : photos.filter((p) => p.category === filter);
 
@@ -58,31 +58,31 @@ const GallerySection = () => {
           </Tabs>
         </motion.div>
 
-        <motion.div layout className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          <AnimatePresence mode="popLayout">
-            {filtered.map((photo) => (
-              <motion.div
-                key={photo.id}
-                layout
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.3 }}
-                className="aspect-square rounded-xl overflow-hidden cursor-pointer group relative bg-secondary"
-                onClick={() => setLightbox(photo)}
-              >
-                <img
-                  src={photo.src}
-                  alt={photo.alt}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
-                  <p className="text-sm font-body text-foreground">{photo.alt}</p>
-                </div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </motion.div>
+        {photos.length === 0 ? (
+          <p className="text-center text-muted-foreground font-body">No photos yet. Admin can upload from the dashboard.</p>
+        ) : (
+          <motion.div layout className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <AnimatePresence mode="popLayout">
+              {filtered.map((photo) => (
+                <motion.div
+                  key={photo.id}
+                  layout
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ duration: 0.3 }}
+                  className="aspect-square rounded-xl overflow-hidden cursor-pointer group relative bg-secondary"
+                  onClick={() => setLightbox(photo)}
+                >
+                  <img src={photo.src} alt={photo.alt} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+                    <p className="text-sm font-body text-foreground">{photo.alt}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </motion.div>
+        )}
       </div>
 
       {/* Lightbox */}
@@ -95,10 +95,7 @@ const GallerySection = () => {
             className="fixed inset-0 z-[100] bg-background/95 backdrop-blur-md flex items-center justify-center p-4"
             onClick={() => setLightbox(null)}
           >
-            <button
-              onClick={() => setLightbox(null)}
-              className="absolute top-6 right-6 text-foreground hover:text-primary transition-colors"
-            >
+            <button onClick={() => setLightbox(null)} className="absolute top-6 right-6 text-foreground hover:text-primary transition-colors">
               <X className="w-8 h-8" />
             </button>
             <motion.img
