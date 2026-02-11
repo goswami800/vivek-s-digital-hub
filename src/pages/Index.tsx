@@ -7,13 +7,11 @@ import InstagramSection from "@/components/InstagramSection";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import ContactSection from "@/components/ContactSection";
 import WelcomeModal from "@/components/WelcomeModal";
-import CoffeeModal from "@/components/CoffeeModal";
 
 const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <WelcomeModal />
-      <CoffeeModal />
       <Navbar />
       <HeroSection />
       <AboutSection />
