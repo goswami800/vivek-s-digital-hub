@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Trash2, Upload, Image, Pencil, Check, X } from "lucide-react";
+import { Trash2, Upload, Image, Pencil, Check, X, Pin, PinOff } from "lucide-react";
 
 interface GalleryPhoto {
   id: string;
@@ -13,6 +13,7 @@ interface GalleryPhoto {
   category: string;
   alt: string;
   created_at: string;
+  pinned: boolean;
 }
 
 const GalleryManager = () => {
@@ -36,6 +37,19 @@ const GalleryManager = () => {
     } else {
       toast({ title: "Description updated!" });
       setEditingId(null);
+      fetchPhotos();
+    }
+  };
+
+  const handleTogglePin = async (photo: GalleryPhoto) => {
+    const { error } = await supabase
+      .from("gallery_photos")
+      .update({ pinned: !photo.pinned })
+      .eq("id", photo.id);
+    if (error) {
+      toast({ title: "Pin update failed", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: photo.pinned ? "Photo unpinned" : "Photo pinned!" });
       fetchPhotos();
     }
   };
@@ -147,6 +161,11 @@ const GalleryManager = () => {
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {photos.map((photo) => (
               <div key={photo.id} className="relative group rounded-xl overflow-hidden bg-secondary aspect-square">
+                {photo.pinned && (
+                  <div className="absolute top-2 left-2 z-10 bg-primary text-primary-foreground rounded-full p-1">
+                    <Pin className="w-3 h-3" />
+                  </div>
+                )}
                 <img src={photo.src} alt={photo.alt} className="w-full h-full object-cover" />
                 <div className="absolute inset-0 bg-background/80 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2">
                   <span className="text-xs font-body text-muted-foreground uppercase">{photo.category}</span>
@@ -170,7 +189,11 @@ const GalleryManager = () => {
                   ) : (
                     <>
                       <p className="text-sm font-body text-foreground px-2 text-center">{photo.alt}</p>
-                      <div className="flex gap-1">
+                      <div className="flex gap-1 flex-wrap justify-center">
+                        <Button size="sm" variant={photo.pinned ? "default" : "outline"} onClick={() => handleTogglePin(photo)}>
+                          {photo.pinned ? <PinOff className="w-4 h-4 mr-1" /> : <Pin className="w-4 h-4 mr-1" />}
+                          {photo.pinned ? "Unpin" : "Pin"}
+                        </Button>
                         <Button size="sm" variant="outline" onClick={() => { setEditingId(photo.id); setEditAlt(photo.alt); }}>
                           <Pencil className="w-4 h-4 mr-1" /> Edit
                         </Button>

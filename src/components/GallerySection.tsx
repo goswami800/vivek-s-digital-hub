@@ -11,6 +11,7 @@ interface Photo {
   src: string;
   category: string;
   alt: string;
+  pinned: boolean;
 }
 
 const GallerySection = () => {
@@ -23,7 +24,8 @@ const GallerySection = () => {
     const fetchPhotos = async () => {
       const { data } = await supabase
         .from("gallery_photos")
-        .select("id, src, category, alt")
+        .select("id, src, category, alt, pinned")
+        .order("pinned", { ascending: false })
         .order("created_at", { ascending: false });
       setPhotos(data || []);
     };
