@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Menu, X, Instagram, Youtube } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const navLinks = [
   { label: "Home", href: "#hero" },
@@ -65,6 +66,7 @@ const Navbar = () => {
             <a href="https://www.youtube.com/@VivekTarale0" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
               <Youtube className="w-4 h-4" />
             </a>
+            <ThemeToggle />
           </div>
         </div>
 
@@ -88,13 +90,14 @@ const Navbar = () => {
                   {link.label}
                 </a>
               ))}
-              <div className="flex gap-4 mt-4 pt-4 border-t border-border">
+              <div className="flex items-center gap-4 mt-4 pt-4 border-t border-border">
                 <a href="https://www.instagram.com/tarale_vivek?igsh=dHJvN2puNHI3Ymgx&utm_source=qr" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary">
                   <Instagram className="w-5 h-5" />
                 </a>
                 <a href="https://www.youtube.com/@VivekTarale0" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary">
                   <Youtube className="w-5 h-5" />
                 </a>
+                <ThemeToggle />
               </div>
             </div>
           </SheetContent>

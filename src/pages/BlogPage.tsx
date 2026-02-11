@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft, Calendar } from "lucide-react";
 import { motion } from "framer-motion";
@@ -34,6 +35,13 @@ const BlogPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <Helmet>
+        <title>Blog - Vivek Tarale | Fitness Tips & Insights</title>
+        <meta name="description" content="Read fitness tips, diet plans, and event planning insights from Vivek Tarale." />
+        <meta property="og:title" content="Blog - Vivek Tarale" />
+        <meta property="og:description" content="Fitness tips, diet plans, and event planning insights." />
+        <meta property="og:type" content="website" />
+      </Helmet>
       <Navbar />
       <div className="container mx-auto px-4 pt-24 pb-16">
         <Link to="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary font-body mb-8 transition-colors">

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft, Calendar } from "lucide-react";
 import Navbar from "@/components/Navbar";
@@ -8,6 +9,7 @@ interface BlogPost {
   id: string;
   title: string;
   content: string;
+  excerpt: string;
   image: string | null;
   category: string;
   created_at: string;
@@ -23,7 +25,7 @@ const BlogPostPage = () => {
       if (!slug) return;
       const { data } = await supabase
         .from("blog_posts")
-        .select("id, title, content, image, category, created_at")
+        .select("id, title, content, excerpt, image, category, created_at")
         .eq("slug", slug)
         .eq("published", true)
         .maybeSingle();
@@ -35,6 +37,20 @@ const BlogPostPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      {post && (
+        <Helmet>
+          <title>{post.title} - Vivek Tarale</title>
+          <meta name="description" content={post.excerpt || post.content.substring(0, 160)} />
+          <meta property="og:title" content={`${post.title} - Vivek Tarale`} />
+          <meta property="og:description" content={post.excerpt || post.content.substring(0, 160)} />
+          <meta property="og:type" content="article" />
+          {post.image && <meta property="og:image" content={post.image} />}
+          <meta name="twitter:card" content="summary_large_image" />
+          <meta name="twitter:title" content={post.title} />
+          <meta name="twitter:description" content={post.excerpt || post.content.substring(0, 160)} />
+          {post.image && <meta name="twitter:image" content={post.image} />}
+        </Helmet>
+      )}
       <Navbar />
       <div className="container mx-auto px-4 pt-24 pb-16 max-w-3xl">
         <Link to="/blog" className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary font-body mb-8 transition-colors">
