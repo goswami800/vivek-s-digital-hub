@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Mail, Instagram, Youtube, MapPin } from "lucide-react";
+import { Mail, Instagram, Youtube, MapPin, Coffee } from "lucide-react";
 
 const ContactSection = () => {
   return (
@@ -32,6 +32,17 @@ const ContactSection = () => {
             vivektarale22@gmail.com
           </a>
 
+          <div className="block mt-4 mb-12">
+            <a
+              href="https://buymeacoffee.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-3 bg-card border border-border text-foreground font-body text-base px-6 py-3 rounded-full hover:border-primary hover:text-primary transition-colors"
+            >
+              <Coffee className="w-5 h-5" />
+              Buy Me a Coffee
+            </a>
+          </div>
           <div className="flex items-center justify-center gap-6 mt-8">
             <a
               href="https://instagram.com"
