@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { Dumbbell, Users, Calendar, Trophy } from "lucide-react";
 
 const stats = [
-  { icon: Dumbbell, value: "8+", label: "Years Experience" },
+  { icon: Dumbbell, value: "5+", label: "Years Experience" },
   { icon: Users, value: "500+", label: "Clients Trained" },
   { icon: Calendar, value: "50+", label: "Events Planned" },
   { icon: Trophy, value: "20+", label: "Brand Collabs" },
