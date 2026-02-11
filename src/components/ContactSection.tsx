@@ -34,7 +34,7 @@ const ContactSection = () => {
 
           <div className="block mt-4 mb-12">
             <a
-              href="https://buymeacoffee.com"
+              href="https://buymeacoffee.com/vivektarale"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-3 bg-card border border-border text-foreground font-body text-base px-6 py-3 rounded-full hover:border-primary hover:text-primary transition-colors"
