@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Trash2, Upload, Image } from "lucide-react";
+import { Trash2, Upload, Image, Pencil, Check, X } from "lucide-react";
 
 interface GalleryPhoto {
   id: string;
@@ -22,7 +22,23 @@ const GalleryManager = () => {
   const [category, setCategory] = useState("fitness");
   const [alt, setAlt] = useState("");
   const [file, setFile] = useState<File | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editAlt, setEditAlt] = useState("");
   const { toast } = useToast();
+
+  const handleEditSave = async (id: string) => {
+    const { error } = await supabase
+      .from("gallery_photos")
+      .update({ alt: editAlt })
+      .eq("id", id);
+    if (error) {
+      toast({ title: "Update failed", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Description updated!" });
+      setEditingId(null);
+      fetchPhotos();
+    }
+  };
 
   useEffect(() => {
     fetchPhotos();
@@ -134,10 +150,36 @@ const GalleryManager = () => {
                 <img src={photo.src} alt={photo.alt} className="w-full h-full object-cover" />
                 <div className="absolute inset-0 bg-background/80 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2">
                   <span className="text-xs font-body text-muted-foreground uppercase">{photo.category}</span>
-                  <p className="text-sm font-body text-foreground px-2 text-center">{photo.alt}</p>
-                  <Button variant="destructive" size="sm" onClick={() => handleDelete(photo)}>
-                    <Trash2 className="w-4 h-4 mr-1" /> Delete
-                  </Button>
+                  {editingId === photo.id ? (
+                    <div className="flex flex-col items-center gap-2 px-2 w-full">
+                      <Input
+                        value={editAlt}
+                        onChange={(e) => setEditAlt(e.target.value)}
+                        className="bg-secondary border-border text-sm"
+                        placeholder="Photo description"
+                      />
+                      <div className="flex gap-1">
+                        <Button size="sm" onClick={() => handleEditSave(photo.id)} className="bg-gradient-fire">
+                          <Check className="w-4 h-4" />
+                        </Button>
+                        <Button size="sm" variant="ghost" onClick={() => setEditingId(null)}>
+                          <X className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      <p className="text-sm font-body text-foreground px-2 text-center">{photo.alt}</p>
+                      <div className="flex gap-1">
+                        <Button size="sm" variant="outline" onClick={() => { setEditingId(photo.id); setEditAlt(photo.alt); }}>
+                          <Pencil className="w-4 h-4 mr-1" /> Edit
+                        </Button>
+                        <Button variant="destructive" size="sm" onClick={() => handleDelete(photo)}>
+                          <Trash2 className="w-4 h-4 mr-1" /> Delete
+                        </Button>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             ))}
