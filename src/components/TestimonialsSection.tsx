@@ -1,61 +1,66 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
-import { ChevronLeft, ChevronRight, Quote } from "lucide-react";
+import { ChevronLeft, ChevronRight, Quote, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
 
-const testimonials = [
-  {
-    name: "Rahul Sharma",
-    role: "Fitness Client",
-    quote: "Vivek completely transformed my fitness journey. His dedication and expertise are unmatched. I lost 20kg in 6 months!",
-  },
-  {
-    name: "Priya Patel",
-    role: "Brand Partner",
-    quote: "Working with Vivek on our fitness campaign was incredible. His energy and professionalism brought our vision to life.",
-  },
-  {
-    name: "Amit Desai",
-    role: "Event Organizer",
-    quote: "Vivek planned and executed our fitness expo flawlessly. The turnout and energy were beyond our expectations.",
-  },
-  {
-    name: "Sneha Kulkarni",
-    role: "Online Coaching Client",
-    quote: "Even through online coaching, Vivek's guidance was personalized and effective. He truly cares about each client's progress.",
-  },
-  {
-    name: "Rohan Mehta",
-    role: "Personal Training Client",
-    quote: "I never thought I could achieve this physique. Vivek's structured approach and constant motivation made the impossible possible.",
-  },
-  {
-    name: "Anjali Bhosale",
-    role: "Corporate Wellness Partner",
-    quote: "Vivek conducted wellness sessions for our team of 200+ employees. The feedback was overwhelmingly positive — everyone loved his energy!",
-  },
-  {
-    name: "Vikram Joshi",
-    role: "Fitness Client",
-    quote: "From diet planning to workout routines, Vivek covered everything. His knowledge in nutrition and training is top-notch.",
-  },
-  {
-    name: "Neha Rao",
-    role: "Social Media Collaborator",
-    quote: "Vivek's content creation skills are amazing. Our collaboration brought great engagement and authentic fitness content to our audience.",
-  },
+interface Review {
+  id: string;
+  client_name: string;
+  review: string;
+  rating: number;
+  designation: string | null;
+  avatar_url: string | null;
+}
+
+const fallbackReviews: Review[] = [
+  { id: "1", client_name: "Rahul Sharma", review: "Vivek completely transformed my fitness journey. His dedication and expertise are unmatched. I lost 20kg in 6 months!", rating: 5, designation: "Fitness Client", avatar_url: null },
+  { id: "2", client_name: "Priya Patel", review: "Working with Vivek on our fitness campaign was incredible. His energy and professionalism brought our vision to life.", rating: 5, designation: "Brand Partner", avatar_url: null },
+  { id: "3", client_name: "Amit Desai", review: "Vivek planned and executed our fitness expo flawlessly. The turnout and energy were beyond our expectations.", rating: 5, designation: "Event Organizer", avatar_url: null },
+  { id: "4", client_name: "Sneha Kulkarni", review: "Even through online coaching, Vivek's guidance was personalized and effective. He truly cares about each client's progress.", rating: 5, designation: "Online Coaching Client", avatar_url: null },
+  { id: "5", client_name: "Rohan Mehta", review: "I never thought I could achieve this physique. Vivek's structured approach and constant motivation made the impossible possible.", rating: 5, designation: "Personal Training Client", avatar_url: null },
 ];
 
+const StarRating = ({ rating }: { rating: number }) => (
+  <div className="flex gap-1 justify-center mb-4">
+    {[1, 2, 3, 4, 5].map((star) => (
+      <Star
+        key={star}
+        className={`w-5 h-5 ${star <= rating ? "text-primary fill-primary" : "text-muted-foreground/30"}`}
+      />
+    ))}
+  </div>
+);
+
 const TestimonialsSection = () => {
+  const [reviews, setReviews] = useState<Review[]>([]);
   const [current, setCurrent] = useState(0);
 
-  const next = useCallback(() => setCurrent((c) => (c + 1) % testimonials.length), []);
-  const prev = () => setCurrent((c) => (c - 1 + testimonials.length) % testimonials.length);
+  useEffect(() => {
+    const fetch = async () => {
+      const { data } = await supabase
+        .from("client_reviews")
+        .select("id, client_name, review, rating, designation, avatar_url")
+        .order("sort_order", { ascending: true });
+      setReviews(data && data.length > 0 ? data : fallbackReviews);
+    };
+    fetch();
+  }, []);
+
+  const items = reviews.length > 0 ? reviews : fallbackReviews;
+
+  const next = useCallback(() => setCurrent((c) => (c + 1) % items.length), [items.length]);
+  const prev = () => setCurrent((c) => (c - 1 + items.length) % items.length);
 
   useEffect(() => {
     const timer = setInterval(next, 5000);
     return () => clearInterval(timer);
   }, [next]);
+
+  // Reset current if items change
+  useEffect(() => { if (current >= items.length) setCurrent(0); }, [items.length, current]);
+
+  if (items.length === 0) return null;
 
   return (
     <section id="testimonials" className="py-20 md:py-32">
@@ -68,7 +73,7 @@ const TestimonialsSection = () => {
           className="text-center mb-16"
         >
           <h2 className="text-5xl md:text-6xl font-display text-gradient-fire mb-4">
-            TESTIMONIALS
+            CLIENT REVIEWS
           </h2>
           <p className="text-muted-foreground font-body max-w-xl mx-auto">
             What my clients and partners say about working with me.
@@ -77,20 +82,32 @@ const TestimonialsSection = () => {
 
         <div className="max-w-3xl mx-auto relative">
           <div className="bg-card border border-border rounded-2xl p-5 sm:p-8 md:p-12 text-center relative overflow-hidden">
-            <Quote className="w-10 h-10 text-primary/30 mx-auto mb-6" />
+            <Quote className="w-10 h-10 text-primary/30 mx-auto mb-4" />
             <motion.div
-              key={current}
+              key={items[current]?.id}
               initial={{ opacity: 0, x: 30 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -30 }}
               transition={{ duration: 0.4 }}
             >
+              <StarRating rating={items[current]?.rating ?? 5} />
               <p className="text-lg md:text-xl font-body text-foreground leading-relaxed mb-8 italic">
-                "{testimonials[current].quote}"
+                "{items[current]?.review}"
               </p>
-              <div>
-                <p className="font-display text-2xl text-gradient-fire">{testimonials[current].name}</p>
-                <p className="text-sm font-body text-muted-foreground">{testimonials[current].role}</p>
+              <div className="flex items-center justify-center gap-3">
+                {items[current]?.avatar_url && (
+                  <img
+                    src={items[current].avatar_url!}
+                    alt={items[current].client_name}
+                    className="w-12 h-12 rounded-full object-cover border-2 border-primary/30"
+                  />
+                )}
+                <div>
+                  <p className="font-display text-2xl text-gradient-fire">{items[current]?.client_name}</p>
+                  {items[current]?.designation && (
+                    <p className="text-sm font-body text-muted-foreground">{items[current].designation}</p>
+                  )}
+                </div>
               </div>
             </motion.div>
           </div>
@@ -100,7 +117,7 @@ const TestimonialsSection = () => {
               <ChevronLeft className="w-5 h-5" />
             </Button>
             <div className="flex gap-2">
-              {testimonials.map((_, i) => (
+              {items.map((_, i) => (
                 <button
                   key={i}
                   onClick={() => setCurrent(i)}
