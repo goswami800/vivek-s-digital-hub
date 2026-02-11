@@ -25,9 +25,17 @@ const Navbar = () => {
   }, []);
 
   const handleClick = (href: string) => {
-    setOpen(false);
-    const el = document.querySelector(href);
-    el?.scrollIntoView({ behavior: "smooth" });
+    if (open) {
+      setOpen(false);
+      // Wait for sheet to close before scrolling
+      setTimeout(() => {
+        const el = document.querySelector(href);
+        el?.scrollIntoView({ behavior: "smooth" });
+      }, 300);
+    } else {
+      const el = document.querySelector(href);
+      el?.scrollIntoView({ behavior: "smooth" });
+    }
   };
 
   return (
