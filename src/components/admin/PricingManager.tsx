@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Trash2, Save, GripVertical, ChevronDown, ChevronUp, Percent, Tag } from "lucide-react";
+import { Plus, Trash2, Save, GripVertical, ChevronDown, ChevronUp, Percent, Tag, Clock } from "lucide-react";
 
 interface Feature {
   text: string;
@@ -24,6 +24,7 @@ interface ServicePackage {
   sort_order: number;
   discount_percentage: number;
   discount_label: string;
+  offer_ends_at: string | null;
 }
 
 interface Coupon {
@@ -33,6 +34,8 @@ interface Coupon {
   active: boolean;
   valid_from: string | null;
   valid_until: string | null;
+  usage_limit: number | null;
+  usage_count: number;
 }
 
 const iconOptions = ["dumbbell", "monitor", "calendar", "camera", "heart", "star", "zap", "target"];
@@ -79,6 +82,7 @@ const PricingManager = () => {
         sort_order: pkg.sort_order,
         discount_percentage: pkg.discount_percentage,
         discount_label: pkg.discount_label,
+        offer_ends_at: pkg.offer_ends_at || null,
       })
       .eq("id", pkg.id);
     if (error) toast({ title: "Save failed", description: error.message, variant: "destructive" });
@@ -156,6 +160,7 @@ const PricingManager = () => {
         discount_percentage: coupon.discount_percentage,
         active: coupon.active,
         valid_until: coupon.valid_until || null,
+        usage_limit: coupon.usage_limit,
       })
       .eq("id", coupon.id);
     if (error) toast({ title: "Save failed", description: error.message, variant: "destructive" });
@@ -273,7 +278,7 @@ const PricingManager = () => {
                     <h3 className="text-sm font-display text-foreground mb-3 flex items-center gap-2">
                       <Percent className="w-4 h-4 text-primary" /> Offer / Discount
                     </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div className="space-y-2">
                         <Label className="font-body text-xs">Discount % (0 = no discount)</Label>
                         <Input
@@ -292,6 +297,15 @@ const PricingManager = () => {
                           onChange={(e) => updatePkg(pkg.id, { discount_label: e.target.value })}
                           className="bg-secondary border-border"
                           placeholder="Limited Time Offer"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="font-body text-xs flex items-center gap-1"><Clock className="w-3 h-3" /> Offer Ends At</Label>
+                        <Input
+                          type="datetime-local"
+                          value={pkg.offer_ends_at ? pkg.offer_ends_at.slice(0, 16) : ""}
+                          onChange={(e) => updatePkg(pkg.id, { offer_ends_at: e.target.value ? e.target.value + ":00Z" : null })}
+                          className="bg-secondary border-border"
                         />
                       </div>
                     </div>
@@ -352,7 +366,7 @@ const PricingManager = () => {
             {coupons.length === 0 && <p className="text-muted-foreground font-body text-sm">No coupons yet.</p>}
             {coupons.map((coupon) => (
               <div key={coupon.id} className="bg-card rounded-xl border border-border p-4 space-y-3">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
                   <div className="space-y-1">
                     <Label className="font-body text-xs">Code</Label>
                     <Input
@@ -374,13 +388,25 @@ const PricingManager = () => {
                     />
                   </div>
                   <div className="space-y-1">
-                    <Label className="font-body text-xs">Valid Until (optional)</Label>
+                    <Label className="font-body text-xs">Valid Until</Label>
                     <Input
                       type="date"
                       value={coupon.valid_until ? coupon.valid_until.split("T")[0] : ""}
                       onChange={(e) => updateCoupon(coupon.id, { valid_until: e.target.value ? e.target.value + "T23:59:59Z" : null })}
                       className="bg-secondary border-border"
                     />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="font-body text-xs">Usage Limit (blank=unlimited)</Label>
+                    <Input
+                      type="number"
+                      min={0}
+                      value={coupon.usage_limit ?? ""}
+                      onChange={(e) => updateCoupon(coupon.id, { usage_limit: e.target.value ? parseInt(e.target.value) : null })}
+                      className="bg-secondary border-border"
+                      placeholder="∞"
+                    />
+                    <p className="text-xs text-muted-foreground font-body">Used: {coupon.usage_count} times</p>
                   </div>
                   <div className="flex items-end gap-2">
                     <div className="flex items-center gap-2 pb-1">
