@@ -242,6 +242,45 @@ export type Database = {
         }
         Relationships: []
       }
+      service_packages: {
+        Row: {
+          created_at: string
+          duration: string
+          features: Json
+          icon: string
+          id: string
+          name: string
+          popular: boolean
+          price: string
+          sort_order: number
+          tagline: string
+        }
+        Insert: {
+          created_at?: string
+          duration?: string
+          features?: Json
+          icon?: string
+          id?: string
+          name: string
+          popular?: boolean
+          price?: string
+          sort_order?: number
+          tagline?: string
+        }
+        Update: {
+          created_at?: string
+          duration?: string
+          features?: Json
+          icon?: string
+          id?: string
+          name?: string
+          popular?: boolean
+          price?: string
+          sort_order?: number
+          tagline?: string
+        }
+        Relationships: []
+      }
       site_settings: {
         Row: {
           key: string
