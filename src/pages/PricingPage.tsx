@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { useToast } from "@/hooks/use-toast";
+import CountdownTimer from "@/components/CountdownTimer";
 
 interface Feature {
   text: string;
@@ -25,6 +26,7 @@ interface ServicePackage {
   sort_order: number;
   discount_percentage: number;
   discount_label: string;
+  offer_ends_at: string | null;
 }
 
 interface DietPlan {
@@ -102,6 +104,12 @@ const PricingPage = () => {
       toast({ title: "Coupon expired", description: "This coupon has expired.", variant: "destructive" });
       return;
     }
+    if (data.usage_limit !== null && data.usage_count >= data.usage_limit) {
+      toast({ title: "Coupon exhausted", description: "This coupon has reached its usage limit.", variant: "destructive" });
+      return;
+    }
+    // Increment usage count
+    await supabase.from("coupons").update({ usage_count: (data.usage_count || 0) + 1 }).eq("id", data.id);
     setAppliedCoupon({ code: data.code, discount_percentage: data.discount_percentage });
     toast({ title: `Coupon "${data.code}" applied!`, description: `${data.discount_percentage}% extra discount activated.` });
   };
@@ -265,6 +273,9 @@ const PricingPage = () => {
                             <span className="text-3xl font-display text-gradient-fire">{formatPrice(discounted!)}</span>
                             <span className="text-muted-foreground font-body text-sm"> / {pkg.duration}</span>
                             <div className="text-xs text-destructive font-body mt-1">{totalDiscount}% total savings!</div>
+                            {pkg.offer_ends_at && new Date(pkg.offer_ends_at) > new Date() && (
+                              <CountdownTimer endDate={pkg.offer_ends_at} />
+                            )}
                           </>
                         ) : (
                           <>

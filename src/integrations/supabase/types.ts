@@ -129,6 +129,8 @@ export type Database = {
           created_at: string
           discount_percentage: number
           id: string
+          usage_count: number
+          usage_limit: number | null
           valid_from: string | null
           valid_until: string | null
         }
@@ -138,6 +140,8 @@ export type Database = {
           created_at?: string
           discount_percentage?: number
           id?: string
+          usage_count?: number
+          usage_limit?: number | null
           valid_from?: string | null
           valid_until?: string | null
         }
@@ -147,6 +151,8 @@ export type Database = {
           created_at?: string
           discount_percentage?: number
           id?: string
+          usage_count?: number
+          usage_limit?: number | null
           valid_from?: string | null
           valid_until?: string | null
         }
@@ -282,6 +288,7 @@ export type Database = {
           icon: string
           id: string
           name: string
+          offer_ends_at: string | null
           popular: boolean
           price: string
           sort_order: number
@@ -296,6 +303,7 @@ export type Database = {
           icon?: string
           id?: string
           name: string
+          offer_ends_at?: string | null
           popular?: boolean
           price?: string
           sort_order?: number
@@ -310,6 +318,7 @@ export type Database = {
           icon?: string
           id?: string
           name?: string
+          offer_ends_at?: string | null
           popular?: boolean
           price?: string
           sort_order?: number
