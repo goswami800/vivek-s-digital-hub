@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Menu, X, Instagram, Youtube } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
@@ -11,6 +12,7 @@ const navLinks = [
   { label: "Services", href: "#services" },
   { label: "Videos", href: "#videos" },
   { label: "Gallery", href: "#gallery" },
+  { label: "Pricing", href: "/pricing", external: true },
   { label: "Blog", href: "#blog" },
   { label: "Book Now", href: "#booking" },
   { label: "Contact", href: "#contact" },
@@ -19,6 +21,8 @@ const navLinks = [
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
@@ -26,16 +30,24 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const handleClick = (href: string) => {
+  const handleClick = (link: { href: string; external?: boolean }) => {
+    if (link.external) {
+      if (open) setOpen(false);
+      navigate(link.href);
+      return;
+    }
+    if (location.pathname !== "/") {
+      navigate("/" + link.href);
+      return;
+    }
     if (open) {
       setOpen(false);
-      // Wait for sheet to close before scrolling
       setTimeout(() => {
-        const el = document.querySelector(href);
+        const el = document.querySelector(link.href);
         el?.scrollIntoView({ behavior: "smooth" });
       }, 300);
     } else {
-      const el = document.querySelector(href);
+      const el = document.querySelector(link.href);
       el?.scrollIntoView({ behavior: "smooth" });
     }
   };
@@ -51,7 +63,7 @@ const Navbar = () => {
       <div className="container mx-auto flex items-center justify-between h-16 px-4">
         <a
           href="#hero"
-          onClick={(e) => { e.preventDefault(); handleClick("#hero"); }}
+          onClick={(e) => { e.preventDefault(); handleClick({ href: "#hero" }); }}
           className="text-2xl font-display text-gradient-fire tracking-wider"
         >
           VIVEK TARALE
@@ -63,7 +75,7 @@ const Navbar = () => {
             <a
               key={link.href}
               href={link.href}
-              onClick={(e) => { e.preventDefault(); handleClick(link.href); }}
+              onClick={(e) => { e.preventDefault(); handleClick(link); }}
               className="text-sm font-body text-muted-foreground hover:text-primary transition-colors"
             >
               {link.label}
@@ -94,7 +106,7 @@ const Navbar = () => {
                 <a
                   key={link.href}
                   href={link.href}
-                  onClick={(e) => { e.preventDefault(); handleClick(link.href); }}
+                  onClick={(e) => { e.preventDefault(); handleClick(link); }}
                   className="text-lg font-body text-foreground hover:text-primary transition-colors"
                 >
                   {link.label}
