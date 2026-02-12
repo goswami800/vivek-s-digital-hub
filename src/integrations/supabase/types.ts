@@ -122,6 +122,36 @@ export type Database = {
         }
         Relationships: []
       }
+      coupons: {
+        Row: {
+          active: boolean
+          code: string
+          created_at: string
+          discount_percentage: number
+          id: string
+          valid_from: string | null
+          valid_until: string | null
+        }
+        Insert: {
+          active?: boolean
+          code: string
+          created_at?: string
+          discount_percentage?: number
+          id?: string
+          valid_from?: string | null
+          valid_until?: string | null
+        }
+        Update: {
+          active?: boolean
+          code?: string
+          created_at?: string
+          discount_percentage?: number
+          id?: string
+          valid_from?: string | null
+          valid_until?: string | null
+        }
+        Relationships: []
+      }
       diet_plans: {
         Row: {
           category: string
@@ -245,6 +275,8 @@ export type Database = {
       service_packages: {
         Row: {
           created_at: string
+          discount_label: string
+          discount_percentage: number
           duration: string
           features: Json
           icon: string
@@ -257,6 +289,8 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          discount_label?: string
+          discount_percentage?: number
           duration?: string
           features?: Json
           icon?: string
@@ -269,6 +303,8 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          discount_label?: string
+          discount_percentage?: number
           duration?: string
           features?: Json
           icon?: string

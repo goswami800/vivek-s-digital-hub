@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
-import { Check, X, MessageCircle, ArrowLeft, Star, Dumbbell, Monitor, Calendar, Camera, Heart, Zap, Target } from "lucide-react";
+import { Check, X, MessageCircle, ArrowLeft, Star, Dumbbell, Monitor, Calendar, Camera, Heart, Zap, Target, Percent, Tag } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
+import { useToast } from "@/hooks/use-toast";
 
 interface Feature {
   text: string;
@@ -21,6 +23,8 @@ interface ServicePackage {
   popular: boolean;
   features: Feature[];
   sort_order: number;
+  discount_percentage: number;
+  discount_label: string;
 }
 
 interface DietPlan {
@@ -45,10 +49,22 @@ const iconMap: Record<string, React.ReactNode> = {
   target: <Target className="w-7 h-7" />,
 };
 
+const extractNumericPrice = (price: string): number | null => {
+  const match = price.replace(/,/g, "").match(/(\d+)/);
+  return match ? parseInt(match[1]) : null;
+};
+
+const formatPrice = (amount: number): string => {
+  return "₹" + amount.toLocaleString("en-IN");
+};
+
 const PricingPage = () => {
   const [servicePackages, setServicePackages] = useState<ServicePackage[]>([]);
   const [dietPlans, setDietPlans] = useState<DietPlan[]>([]);
   const [whatsapp, setWhatsapp] = useState("");
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discount_percentage: number } | null>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -69,16 +85,63 @@ const PricingPage = () => {
     fetchData();
   }, []);
 
-  const enquire = (service: string, price?: string) => {
+  const applyCoupon = async () => {
+    if (!couponCode.trim()) return;
+    const { data } = await supabase
+      .from("coupons")
+      .select("*")
+      .eq("code", couponCode.toUpperCase())
+      .eq("active", true)
+      .maybeSingle();
+
+    if (!data) {
+      toast({ title: "Invalid coupon", description: "This coupon code is not valid or has expired.", variant: "destructive" });
+      return;
+    }
+    if (data.valid_until && new Date(data.valid_until) < new Date()) {
+      toast({ title: "Coupon expired", description: "This coupon has expired.", variant: "destructive" });
+      return;
+    }
+    setAppliedCoupon({ code: data.code, discount_percentage: data.discount_percentage });
+    toast({ title: `Coupon "${data.code}" applied!`, description: `${data.discount_percentage}% extra discount activated.` });
+  };
+
+  const removeCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponCode("");
+  };
+
+  const getFinalPrice = (pkg: ServicePackage): { original: number | null; discounted: number | null; totalDiscount: number } => {
+    const original = extractNumericPrice(pkg.price);
+    if (!original) return { original: null, discounted: null, totalDiscount: 0 };
+
+    let totalDiscount = pkg.discount_percentage || 0;
+    if (appliedCoupon) totalDiscount += appliedCoupon.discount_percentage;
+    if (totalDiscount > 100) totalDiscount = 100;
+
+    const discounted = Math.round(original * (1 - totalDiscount / 100));
+    return { original, discounted, totalDiscount };
+  };
+
+  const getDietFinalPrice = (price: number): { discounted: number; totalDiscount: number } => {
+    const totalDiscount = appliedCoupon ? appliedCoupon.discount_percentage : 0;
+    return { discounted: Math.round(price * (1 - totalDiscount / 100)), totalDiscount };
+  };
+
+  const enquire = (service: string, originalPrice?: string, finalPrice?: string) => {
     const number = whatsapp.replace(/[^0-9]/g, "");
     if (!number) return;
-    const msg = price
-      ? `Hi Vivek! I'm interested in the "${service}" package (${price}). Can you share more details?`
-      : `Hi Vivek! I'm interested in the "${service}" service. Can you share more details?`;
+    let msg: string;
+    if (finalPrice && originalPrice && finalPrice !== originalPrice) {
+      msg = `Hi Vivek! I'm interested in the "${service}" package. Original price: ${originalPrice}, my discounted price: ${finalPrice}${appliedCoupon ? ` (Coupon: ${appliedCoupon.code})` : ""}. Can you share more details?`;
+    } else if (originalPrice) {
+      msg = `Hi Vivek! I'm interested in the "${service}" package (${originalPrice}). Can you share more details?`;
+    } else {
+      msg = `Hi Vivek! I'm interested in the "${service}" service. Can you share more details?`;
+    }
     window.open(`https://wa.me/${number}?text=${encodeURIComponent(msg)}`, "_blank");
   };
 
-  // Find max features count for comparison table
   const maxFeatures = servicePackages.reduce((max, pkg) => Math.max(max, pkg.features.length), 0);
 
   return (
@@ -113,67 +176,139 @@ const PricingPage = () => {
           </div>
         </section>
 
+        {/* Coupon Input */}
+        <section className="pb-10">
+          <div className="container mx-auto px-4">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              className="max-w-md mx-auto bg-card border border-border rounded-xl p-5"
+            >
+              <h3 className="text-sm font-display text-foreground mb-3 flex items-center gap-2">
+                <Tag className="w-4 h-4 text-primary" /> Have a coupon code?
+              </h3>
+              {appliedCoupon ? (
+                <div className="flex items-center justify-between bg-primary/10 rounded-lg px-4 py-3">
+                  <div className="flex items-center gap-2">
+                    <Percent className="w-4 h-4 text-primary" />
+                    <span className="font-body text-sm text-foreground">
+                      <strong>{appliedCoupon.code}</strong> — {appliedCoupon.discount_percentage}% off applied!
+                    </span>
+                  </div>
+                  <Button variant="ghost" size="sm" onClick={removeCoupon} className="font-body text-xs">
+                    Remove
+                  </Button>
+                </div>
+              ) : (
+                <div className="flex gap-2">
+                  <Input
+                    value={couponCode}
+                    onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                    placeholder="Enter code"
+                    className="bg-secondary border-border font-mono uppercase"
+                  />
+                  <Button onClick={applyCoupon} className="bg-gradient-fire hover:opacity-90 font-body shrink-0">
+                    Apply
+                  </Button>
+                </div>
+              )}
+            </motion.div>
+          </div>
+        </section>
+
         {/* Service Packages */}
         {servicePackages.length > 0 && (
           <section className="pb-20">
             <div className="container mx-auto px-4">
               <h2 className="text-3xl md:text-4xl font-display text-foreground text-center mb-12">SERVICE PACKAGES</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
-                {servicePackages.map((pkg, i) => (
-                  <motion.div
-                    key={pkg.id}
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5, delay: i * 0.1 }}
-                    className={`relative rounded-xl border p-6 flex flex-col ${
-                      pkg.popular ? "border-primary bg-card shadow-fire" : "border-border bg-card"
-                    }`}
-                  >
-                    {pkg.popular && (
-                      <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-fire text-primary-foreground text-xs font-body px-4 py-1 rounded-full flex items-center gap-1">
-                        <Star className="w-3 h-3" /> Most Popular
-                      </div>
-                    )}
-                    <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center text-primary mb-4">
-                      {iconMap[pkg.icon] || <Dumbbell className="w-7 h-7" />}
-                    </div>
-                    <h3 className="text-2xl font-display text-foreground">{pkg.name}</h3>
-                    <p className="text-sm text-muted-foreground font-body mb-4">{pkg.tagline}</p>
+                {servicePackages.map((pkg, i) => {
+                  const { original, discounted, totalDiscount } = getFinalPrice(pkg);
+                  const hasDiscount = totalDiscount > 0 && original !== null;
 
-                    <div className="mb-6">
-                      <span className="text-3xl font-display text-gradient-fire">{pkg.price}</span>
-                      {pkg.price !== "Custom" && (
-                        <span className="text-muted-foreground font-body text-sm"> / {pkg.duration}</span>
-                      )}
-                    </div>
-
-                    <ul className="space-y-2.5 mb-6 flex-grow">
-                      {pkg.features.map((f, fi) => (
-                        <li key={fi} className="flex items-center gap-2 text-sm font-body">
-                          {f.included ? (
-                            <Check className="w-4 h-4 text-primary flex-shrink-0" />
-                          ) : (
-                            <X className="w-4 h-4 text-muted-foreground/40 flex-shrink-0" />
-                          )}
-                          <span className={f.included ? "text-foreground" : "text-muted-foreground/50"}>{f.text}</span>
-                        </li>
-                      ))}
-                    </ul>
-
-                    <button
-                      onClick={() => enquire(pkg.name, pkg.price !== "Custom" ? pkg.price : undefined)}
-                      className={`w-full py-3 rounded-lg font-body transition-all duration-300 flex items-center justify-center gap-2 ${
-                        pkg.popular
-                          ? "bg-gradient-fire text-primary-foreground hover:opacity-90"
-                          : "border border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+                  return (
+                    <motion.div
+                      key={pkg.id}
+                      initial={{ opacity: 0, y: 30 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.5, delay: i * 0.1 }}
+                      className={`relative rounded-xl border p-6 flex flex-col ${
+                        pkg.popular ? "border-primary bg-card shadow-fire" : "border-border bg-card"
                       }`}
                     >
-                      <MessageCircle className="w-4 h-4" />
-                      {pkg.price === "Custom" ? "Get Quote" : "Enquire Now"}
-                    </button>
-                  </motion.div>
-                ))}
+                      {pkg.popular && (
+                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-fire text-primary-foreground text-xs font-body px-4 py-1 rounded-full flex items-center gap-1">
+                          <Star className="w-3 h-3" /> Most Popular
+                        </div>
+                      )}
+
+                      {/* Discount badge */}
+                      {(pkg.discount_percentage > 0 || pkg.discount_label) && (
+                        <div className="absolute -top-3 right-3 bg-destructive text-destructive-foreground text-xs font-body px-3 py-1 rounded-full flex items-center gap-1">
+                          <Percent className="w-3 h-3" />
+                          {pkg.discount_label || `${pkg.discount_percentage}% OFF`}
+                        </div>
+                      )}
+
+                      <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center text-primary mb-4">
+                        {iconMap[pkg.icon] || <Dumbbell className="w-7 h-7" />}
+                      </div>
+                      <h3 className="text-2xl font-display text-foreground">{pkg.name}</h3>
+                      <p className="text-sm text-muted-foreground font-body mb-4">{pkg.tagline}</p>
+
+                      <div className="mb-6">
+                        {hasDiscount ? (
+                          <>
+                            <span className="text-lg text-muted-foreground font-body line-through mr-2">{pkg.price}</span>
+                            <span className="text-3xl font-display text-gradient-fire">{formatPrice(discounted!)}</span>
+                            <span className="text-muted-foreground font-body text-sm"> / {pkg.duration}</span>
+                            <div className="text-xs text-destructive font-body mt-1">{totalDiscount}% total savings!</div>
+                          </>
+                        ) : (
+                          <>
+                            <span className="text-3xl font-display text-gradient-fire">{pkg.price}</span>
+                            {pkg.price !== "Custom" && (
+                              <span className="text-muted-foreground font-body text-sm"> / {pkg.duration}</span>
+                            )}
+                          </>
+                        )}
+                      </div>
+
+                      <ul className="space-y-2.5 mb-6 flex-grow">
+                        {pkg.features.map((f, fi) => (
+                          <li key={fi} className="flex items-center gap-2 text-sm font-body">
+                            {f.included ? (
+                              <Check className="w-4 h-4 text-primary flex-shrink-0" />
+                            ) : (
+                              <X className="w-4 h-4 text-muted-foreground/40 flex-shrink-0" />
+                            )}
+                            <span className={f.included ? "text-foreground" : "text-muted-foreground/50"}>{f.text}</span>
+                          </li>
+                        ))}
+                      </ul>
+
+                      <button
+                        onClick={() =>
+                          enquire(
+                            pkg.name,
+                            pkg.price !== "Custom" ? pkg.price : undefined,
+                            hasDiscount ? formatPrice(discounted!) : undefined
+                          )
+                        }
+                        className={`w-full py-3 rounded-lg font-body transition-all duration-300 flex items-center justify-center gap-2 ${
+                          pkg.popular
+                            ? "bg-gradient-fire text-primary-foreground hover:opacity-90"
+                            : "border border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+                        }`}
+                      >
+                        <MessageCircle className="w-4 h-4" />
+                        {pkg.price === "Custom" ? "Get Quote" : "Enquire Now"}
+                      </button>
+                    </motion.div>
+                  );
+                })}
               </div>
             </div>
           </section>
@@ -188,49 +323,71 @@ const PricingPage = () => {
                 Add a nutrition plan to any service for maximum results.
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
-                {dietPlans.map((plan, i) => (
-                  <motion.div
-                    key={plan.id}
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5, delay: i * 0.1 }}
-                    className={`relative rounded-xl border p-6 flex flex-col ${
-                      plan.popular ? "border-primary bg-card shadow-fire" : "border-border bg-card"
-                    }`}
-                  >
-                    {plan.popular && (
-                      <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-fire text-primary-foreground text-xs font-body px-4 py-1 rounded-full flex items-center gap-1">
-                        <Star className="w-3 h-3" /> Popular
-                      </div>
-                    )}
-                    <h3 className="text-2xl font-display text-foreground mb-1">{plan.name}</h3>
-                    <p className="text-sm text-muted-foreground font-body mb-4 flex-grow">{plan.description}</p>
-                    <div className="mb-4">
-                      <span className="text-3xl font-display text-gradient-fire">₹{plan.price}</span>
-                      <span className="text-muted-foreground font-body text-sm"> / {plan.duration}</span>
-                    </div>
-                    {plan.features.length > 0 && (
-                      <ul className="space-y-2 mb-6">
-                        {plan.features.map((f, fi) => (
-                          <li key={fi} className="flex items-start gap-2 text-sm font-body text-foreground">
-                            <Check className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" /> {f}
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                    <button
-                      onClick={() => enquire(plan.name, `₹${plan.price}`)}
-                      className={`w-full py-3 rounded-lg font-body transition-all duration-300 flex items-center justify-center gap-2 ${
-                        plan.popular
-                          ? "bg-gradient-fire text-primary-foreground hover:opacity-90"
-                          : "border border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+                {dietPlans.map((plan, i) => {
+                  const { discounted, totalDiscount } = getDietFinalPrice(plan.price);
+                  const hasCouponDiscount = totalDiscount > 0;
+
+                  return (
+                    <motion.div
+                      key={plan.id}
+                      initial={{ opacity: 0, y: 30 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.5, delay: i * 0.1 }}
+                      className={`relative rounded-xl border p-6 flex flex-col ${
+                        plan.popular ? "border-primary bg-card shadow-fire" : "border-border bg-card"
                       }`}
                     >
-                      <MessageCircle className="w-4 h-4" /> Enquire Now
-                    </button>
-                  </motion.div>
-                ))}
+                      {plan.popular && (
+                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-fire text-primary-foreground text-xs font-body px-4 py-1 rounded-full flex items-center gap-1">
+                          <Star className="w-3 h-3" /> Popular
+                        </div>
+                      )}
+                      <h3 className="text-2xl font-display text-foreground mb-1">{plan.name}</h3>
+                      <p className="text-sm text-muted-foreground font-body mb-4 flex-grow">{plan.description}</p>
+                      <div className="mb-4">
+                        {hasCouponDiscount ? (
+                          <>
+                            <span className="text-lg text-muted-foreground font-body line-through mr-2">₹{plan.price}</span>
+                            <span className="text-3xl font-display text-gradient-fire">{formatPrice(discounted)}</span>
+                            <span className="text-muted-foreground font-body text-sm"> / {plan.duration}</span>
+                            <div className="text-xs text-destructive font-body mt-1">{totalDiscount}% off with coupon!</div>
+                          </>
+                        ) : (
+                          <>
+                            <span className="text-3xl font-display text-gradient-fire">₹{plan.price}</span>
+                            <span className="text-muted-foreground font-body text-sm"> / {plan.duration}</span>
+                          </>
+                        )}
+                      </div>
+                      {plan.features.length > 0 && (
+                        <ul className="space-y-2 mb-6">
+                          {plan.features.map((f, fi) => (
+                            <li key={fi} className="flex items-start gap-2 text-sm font-body text-foreground">
+                              <Check className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" /> {f}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                      <button
+                        onClick={() =>
+                          enquire(
+                            plan.name,
+                            `₹${plan.price}`,
+                            hasCouponDiscount ? formatPrice(discounted) : undefined
+                          )
+                        }
+                        className={`w-full py-3 rounded-lg font-body transition-all duration-300 flex items-center justify-center gap-2 ${
+                          plan.popular
+                            ? "bg-gradient-fire text-primary-foreground hover:opacity-90"
+                            : "border border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+                        }`}
+                      >
+                        <MessageCircle className="w-4 h-4" /> Enquire Now
+                      </button>
+                    </motion.div>
+                  );
+                })}
               </div>
             </div>
           </section>
@@ -272,11 +429,21 @@ const PricingPage = () => {
                     ))}
                     <tr>
                       <td className="py-4 px-3 font-medium text-foreground">Price</td>
-                      {servicePackages.map((pkg) => (
-                        <td key={pkg.id} className="text-center py-4 px-3 font-display text-lg text-gradient-fire">
-                          {pkg.price}
-                        </td>
-                      ))}
+                      {servicePackages.map((pkg) => {
+                        const { discounted, totalDiscount } = getFinalPrice(pkg);
+                        return (
+                          <td key={pkg.id} className="text-center py-4 px-3">
+                            {totalDiscount > 0 && discounted !== null ? (
+                              <>
+                                <span className="text-muted-foreground line-through text-xs block">{pkg.price}</span>
+                                <span className="font-display text-lg text-gradient-fire">{formatPrice(discounted)}</span>
+                              </>
+                            ) : (
+                              <span className="font-display text-lg text-gradient-fire">{pkg.price}</span>
+                            )}
+                          </td>
+                        );
+                      })}
                     </tr>
                   </tbody>
                 </table>
