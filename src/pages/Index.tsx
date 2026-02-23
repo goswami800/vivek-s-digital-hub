@@ -22,6 +22,7 @@ import AchievementsSection from "@/components/AchievementsSection";
 import VideosSection from "@/components/VideosSection";
 import SectionWrapper from "@/components/SectionWrapper";
 import LoadingScreen from "@/components/LoadingScreen";
+import BrandServicesSection from "@/components/BrandServicesSection";
 
 const Index = () => {
   const [loading, setLoading] = useState(true);
@@ -42,6 +43,7 @@ const Index = () => {
           <SectionWrapper><StatsSection /></SectionWrapper>
           <SectionWrapper><AchievementsSection /></SectionWrapper>
           <SectionWrapper><ServicesSection /></SectionWrapper>
+          <SectionWrapper><BrandServicesSection /></SectionWrapper>
           <SectionWrapper><VideosSection /></SectionWrapper>
           <SectionWrapper><DietPlansSection /></SectionWrapper>
           <SectionWrapper><TransformationsSection /></SectionWrapper>

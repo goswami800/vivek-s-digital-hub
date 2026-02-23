@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LogOut, Image, Instagram, Settings, FileText, ArrowRightLeft, UtensilsCrossed, HelpCircle, Trophy, Video, Star, DollarSign } from "lucide-react";
+import { LogOut, Image, Instagram, Settings, FileText, ArrowRightLeft, UtensilsCrossed, HelpCircle, Trophy, Video, Star, DollarSign, Handshake } from "lucide-react";
 import GalleryManager from "@/components/admin/GalleryManager";
 import InstagramManager from "@/components/admin/InstagramManager";
 import SettingsManager from "@/components/admin/SettingsManager";
@@ -15,6 +15,7 @@ import AchievementsManager from "@/components/admin/AchievementsManager";
 import VideosManager from "@/components/admin/VideosManager";
 import ReviewsManager from "@/components/admin/ReviewsManager";
 import PricingManager from "@/components/admin/PricingManager";
+import BrandServicesManager from "@/components/admin/BrandServicesManager";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -93,6 +94,9 @@ const AdminDashboard = () => {
             <TabsTrigger value="pricing" className="font-body data-[state=active]:bg-primary data-[state=active]:text-primary-foreground gap-2">
               <DollarSign className="w-4 h-4" /> Pricing
             </TabsTrigger>
+            <TabsTrigger value="brand" className="font-body data-[state=active]:bg-primary data-[state=active]:text-primary-foreground gap-2">
+              <Handshake className="w-4 h-4" /> Brand Services
+            </TabsTrigger>
             <TabsTrigger value="settings" className="font-body data-[state=active]:bg-primary data-[state=active]:text-primary-foreground gap-2">
               <Settings className="w-4 h-4" /> Settings
             </TabsTrigger>
@@ -107,6 +111,7 @@ const AdminDashboard = () => {
           <TabsContent value="videos"><VideosManager /></TabsContent>
           <TabsContent value="reviews"><ReviewsManager /></TabsContent>
           <TabsContent value="pricing"><PricingManager /></TabsContent>
+          <TabsContent value="brand"><BrandServicesManager /></TabsContent>
           <TabsContent value="settings"><SettingsManager /></TabsContent>
         </Tabs>
       </div>

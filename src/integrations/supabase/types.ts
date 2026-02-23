@@ -86,6 +86,48 @@ export type Database = {
         }
         Relationships: []
       }
+      brand_services: {
+        Row: {
+          active: boolean
+          category: string
+          created_at: string
+          description: string
+          duration: string
+          features: string[]
+          id: string
+          name: string
+          popular: boolean
+          price: number
+          sort_order: number
+        }
+        Insert: {
+          active?: boolean
+          category?: string
+          created_at?: string
+          description?: string
+          duration?: string
+          features?: string[]
+          id?: string
+          name: string
+          popular?: boolean
+          price?: number
+          sort_order?: number
+        }
+        Update: {
+          active?: boolean
+          category?: string
+          created_at?: string
+          description?: string
+          duration?: string
+          features?: string[]
+          id?: string
+          name?: string
+          popular?: boolean
+          price?: number
+          sort_order?: number
+        }
+        Relationships: []
+      }
       client_reviews: {
         Row: {
           avatar_url: string | null
